@@ -1269,6 +1269,36 @@ export default function App() {
     return <ChevronDown size={12} className="text-blue-600 inline-block ml-1" />;
   };
 
+  const handlePjTableSort = (key: string) => {
+    if (pjSortColumn === key) {
+      setPjSortDirection(pjSortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setPjSortColumn(key);
+      setPjSortDirection(['submit', 'draft', 'total', 'target', 'progress'].includes(key) ? 'desc' : 'asc');
+    }
+  };
+
+  const renderPjSortIcon = (columnKey: string) => {
+    if (pjSortColumn !== columnKey) return <ChevronsUpDown size={12} className="opacity-30 inline-block ml-1" />;
+    if (pjSortDirection === 'asc') return <ChevronUp size={12} className="text-indigo-600 inline-block ml-1" />;
+    return <ChevronDown size={12} className="text-indigo-600 inline-block ml-1" />;
+  };
+
+  const handleMempawahTableSort = (key: string) => {
+    if (mempawahSortColumn === key) {
+      setMempawahSortDirection(mempawahSortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setMempawahSortColumn(key);
+      setMempawahSortDirection(['submit', 'draft', 'total', 'target', 'progress'].includes(key) ? 'desc' : 'asc');
+    }
+  };
+
+  const renderMempawahSortIcon = (columnKey: string) => {
+    if (mempawahSortColumn !== columnKey) return <ChevronsUpDown size={12} className="opacity-30 inline-block ml-1" />;
+    if (mempawahSortDirection === 'asc') return <ChevronUp size={12} className="text-emerald-600 inline-block ml-1" />;
+    return <ChevronDown size={12} className="text-emerald-600 inline-block ml-1" />;
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 font-sans text-slate-900">
       
@@ -2053,7 +2083,7 @@ export default function App() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 pt-3 border-t border-slate-200/60">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3 border-t border-slate-200/60">
               {/* PJ name filter */}
               <div className="flex flex-col gap-1">
                 <span className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wide">Filter Nama PJ:</span>
@@ -2066,36 +2096,6 @@ export default function App() {
                   {uniquePjsList.map(pj => (
                     <option key={pj} value={pj}>{pj}</option>
                   ))}
-                </select>
-              </div>
-
-              {/* Column Sort Filter */}
-              <div className="flex flex-col gap-1">
-                <span className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wide">Urutkan Kolom:</span>
-                <select
-                  value={pjSortColumn}
-                  onChange={(e) => setPjSortColumn(e.target.value)}
-                  className="bg-white border border-slate-200 rounded px-2 py-1 text-xs text-slate-700 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/10 outline-hidden transition-all cursor-pointer w-full"
-                >
-                  <option value="progress">Persentase (Default)</option>
-                  <option value="pj">Nama PJ</option>
-                  <option value="submit">Jumlah Submit</option>
-                  <option value="draft">Jumlah Draf</option>
-                  <option value="total">Total Gabungan</option>
-                  <option value="target">Jumlah Target</option>
-                </select>
-              </div>
-
-              {/* Direction Sort Filter */}
-              <div className="flex flex-col gap-1">
-                <span className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wide">Arah Urutan:</span>
-                <select
-                  value={pjSortDirection}
-                  onChange={(e) => setPjSortDirection(e.target.value as 'asc'|'desc')}
-                  className="bg-white border border-slate-200 rounded px-2 py-1 text-xs text-slate-700 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/10 outline-hidden transition-all cursor-pointer w-full"
-                >
-                  <option value="desc">Terbesar ke Terkecil</option>
-                  <option value="asc">Terkecil ke Terbesar</option>
                 </select>
               </div>
 
@@ -2120,12 +2120,24 @@ export default function App() {
             <table className="w-full text-[11px] text-left border-collapse">
               <thead className="bg-slate-50 border-b border-slate-150">
                 <tr className="text-slate-500 uppercase tracking-wider font-extrabold text-[10px]">
-                  <th className="p-3 pl-4">Penanggung Jawab (PJ)</th>
-                  <th className="p-3 text-center">Jumlah Submit</th>
-                  <th className="p-3 text-center">Jumlah Draf</th>
-                  <th className="p-3 text-center">Submit + Draf</th>
-                  <th className="p-3 text-center">Jumlah Target</th>
-                  <th className="p-3 pr-4">Persentase Progres</th>
+                  <th className="p-3 pl-4 cursor-pointer hover:bg-slate-100 transition-colors" onClick={() => handlePjTableSort('pj')}>
+                    Penanggung Jawab (PJ) {renderPjSortIcon('pj')}
+                  </th>
+                  <th className="p-3 text-center cursor-pointer hover:bg-slate-100 transition-colors" onClick={() => handlePjTableSort('submit')}>
+                    Jumlah Submit {renderPjSortIcon('submit')}
+                  </th>
+                  <th className="p-3 text-center cursor-pointer hover:bg-slate-100 transition-colors" onClick={() => handlePjTableSort('draft')}>
+                    Jumlah Draf {renderPjSortIcon('draft')}
+                  </th>
+                  <th className="p-3 text-center cursor-pointer hover:bg-slate-100 transition-colors" onClick={() => handlePjTableSort('total')}>
+                    Submit + Draf {renderPjSortIcon('total')}
+                  </th>
+                  <th className="p-3 text-center cursor-pointer hover:bg-slate-100 transition-colors" onClick={() => handlePjTableSort('target')}>
+                    Jumlah Target {renderPjSortIcon('target')}
+                  </th>
+                  <th className="p-3 pr-4 cursor-pointer hover:bg-slate-100 transition-colors text-right" onClick={() => handlePjTableSort('progress')}>
+                    Persentase Progres {renderPjSortIcon('progress')}
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -2221,7 +2233,7 @@ export default function App() {
             </div>
             
             {/* Multiple Filters Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-3 mt-4 pt-4 border-t border-slate-200/60">
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 mt-4 pt-4 border-t border-slate-200/60">
               {/* PJ filter */}
               <div className="flex flex-col gap-1">
                 <span className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wide">Filter PJ:</span>
@@ -2290,39 +2302,6 @@ export default function App() {
                   ))}
                 </select>
               </div>
-
-              {/* Column Sort Filter */}
-              <div className="flex flex-col gap-1">
-                <span className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wide">Urutkan Kolom:</span>
-                <select
-                  value={mempawahSortColumn}
-                  onChange={(e) => setMempawahSortColumn(e.target.value)}
-                  className="bg-white border border-slate-200 rounded px-2 py-1 text-xs text-slate-700 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/10 outline-hidden transition-all cursor-pointer w-full"
-                >
-                  <option value="progress">Persentase (Default)</option>
-                  <option value="kecamatan">Kecamatan</option>
-                  <option value="desa">Desa</option>
-                  <option value="sls">SLS</option>
-                  <option value="pj">Nama PJ</option>
-                  <option value="submit">Jumlah Submit</option>
-                  <option value="draft">Jumlah Draf</option>
-                  <option value="total">Total Gabungan</option>
-                  <option value="target">Jumlah Target</option>
-                </select>
-              </div>
-
-              {/* Direction Sort Filter */}
-              <div className="flex flex-col gap-1">
-                <span className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wide">Arah Urutan:</span>
-                <select
-                  value={mempawahSortDirection}
-                  onChange={(e) => setMempawahSortDirection(e.target.value as 'asc'|'desc')}
-                  className="bg-white border border-slate-200 rounded px-2 py-1 text-xs text-slate-700 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/10 outline-hidden transition-all cursor-pointer w-full"
-                >
-                  <option value="desc">Terbesar ke Terkecil</option>
-                  <option value="asc">Terkecil ke Terbesar</option>
-                </select>
-              </div>
             </div>
           </div>
 
@@ -2355,17 +2334,35 @@ export default function App() {
               <thead className="bg-slate-50 border-b border-slate-150">
                 <tr className="text-slate-500 uppercase tracking-wider font-extrabold text-[10px]">
                   <th className="p-3 pl-4 text-center w-12">No</th>
-                  <th className="p-3">Kecamatan</th>
-                  <th className="p-3">Desa</th>
-                  <th className="p-3">SLS</th>
-                  <th className="p-3">PJ</th>
+                  <th className="p-3 cursor-pointer hover:bg-slate-100 transition-colors" onClick={() => handleMempawahTableSort('kecamatan')}>
+                    Kecamatan {renderMempawahSortIcon('kecamatan')}
+                  </th>
+                  <th className="p-3 cursor-pointer hover:bg-slate-100 transition-colors" onClick={() => handleMempawahTableSort('desa')}>
+                    Desa {renderMempawahSortIcon('desa')}
+                  </th>
+                  <th className="p-3 cursor-pointer hover:bg-slate-100 transition-colors" onClick={() => handleMempawahTableSort('sls')}>
+                    SLS {renderMempawahSortIcon('sls')}
+                  </th>
+                  <th className="p-3 cursor-pointer hover:bg-slate-100 transition-colors" onClick={() => handleMempawahTableSort('pj')}>
+                    PJ {renderMempawahSortIcon('pj')}
+                  </th>
                   <th className="p-3">Petugas (PPL)</th>
                   <th className="p-3">Pengawas (PML)</th>
-                  <th className="p-3 text-center">Submit</th>
-                  <th className="p-3 text-center">Draf</th>
-                  <th className="p-3 text-center">Submit+Draf</th>
-                  <th className="p-3 text-center">Target</th>
-                  <th className="p-3 pr-4">Progres</th>
+                  <th className="p-3 text-center cursor-pointer hover:bg-slate-100 transition-colors" onClick={() => handleMempawahTableSort('submit')}>
+                    Submit {renderMempawahSortIcon('submit')}
+                  </th>
+                  <th className="p-3 text-center cursor-pointer hover:bg-slate-100 transition-colors" onClick={() => handleMempawahTableSort('draft')}>
+                    Draf {renderMempawahSortIcon('draft')}
+                  </th>
+                  <th className="p-3 text-center cursor-pointer hover:bg-slate-100 transition-colors" onClick={() => handleMempawahTableSort('total')}>
+                    Submit+Draf {renderMempawahSortIcon('total')}
+                  </th>
+                  <th className="p-3 text-center cursor-pointer hover:bg-slate-100 transition-colors" onClick={() => handleMempawahTableSort('target')}>
+                    Target {renderMempawahSortIcon('target')}
+                  </th>
+                  <th className="p-3 pr-4 cursor-pointer hover:bg-slate-100 transition-colors" onClick={() => handleMempawahTableSort('progress')}>
+                    Progres {renderMempawahSortIcon('progress')}
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
