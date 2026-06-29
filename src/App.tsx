@@ -1559,13 +1559,13 @@ export default function App() {
 
           {/* Card 2: Total Draft */}
           <div className="bg-white p-3 rounded-lg border border-slate-200 flex flex-col justify-between shadow-2xs h-24">
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Total Draft (Hari Ini)</span>
+            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Total Draft (Saat Ini)</span>
             <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-2xl font-black text-amber-500">{metricsKPIs.dailyDraft}</span>
+              <span className="text-2xl font-black text-amber-500">{metricsKPIs.cumDraft}</span>
               <span className="text-[11px] text-slate-400 font-medium">perlu re-review</span>
             </div>
-            <div className="text-[10px] text-slate-450 font-semibold uppercase flex items-center gap-1 mt-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span> Status draft temporer
+            <div className="text-[10px] text-slate-450 font-semibold flex items-center gap-1 mt-1 truncate">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span> Diperbarui: {lastUpdate || '-'}
             </div>
           </div>
 
