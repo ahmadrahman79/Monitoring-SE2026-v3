@@ -343,6 +343,7 @@ export default function App() {
   // UI Table Tab Tab
   const [tableTab, setTableTab] = useState<'daily' | 'cumulative'>('daily');
   const [leaderboardTab, setLeaderboardTab] = useState<'most' | 'least'>('most');
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState<boolean>(false);
 
   // Reset bottomTable and pmlTable page to 1 when active PML/PPL filters change
   useEffect(() => {
@@ -1554,11 +1555,24 @@ export default function App() {
           </div>
 
           {/* Dynamic header widgets */}
-          <div className="flex items-center gap-1.5 sm:gap-2">
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+            {/* Filter Toggle Button for Mobile */}
+            <button
+              onClick={() => setIsMobileFilterOpen(!isMobileFilterOpen)}
+              className="xl:hidden bg-slate-100 hover:bg-slate-200 text-slate-600 px-2 py-1.5 rounded flex items-center justify-center transition-colors"
+              title="Toggle Filters"
+            >
+              <Filter size={14} />
+            </button>
+
+            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-400 hidden xl:flex items-center gap-1 mr-1">
+              <Filter size={11} /> Filter:
+            </span>
+
             <select 
               value={selectedPml} 
               onChange={handlePmlChange}
-              className="bg-white border border-slate-300 rounded px-1.5 py-1 sm:px-2 sm:py-1 text-xs sm:text-sm outline-hidden font-medium text-slate-700 cursor-pointer hover:border-slate-400"
+              className="bg-white border border-slate-300 rounded px-1.5 py-1 sm:px-2 sm:py-1 text-xs outline-hidden font-medium text-slate-700 cursor-pointer hover:border-slate-400"
             >
               <option value="ALL">PML: Semua Tim</option>
               {parsedData.pmlList.map(pml => (
@@ -1566,11 +1580,62 @@ export default function App() {
               ))}
             </select>
 
+            {/* PPL Selector */}
+            <select
+              value={selectedPpl}
+              onChange={(e) => setSelectedPpl(e.target.value)}
+              className={`${isMobileFilterOpen ? 'block' : 'hidden'} xl:block bg-slate-50 border border-slate-300 rounded px-1.5 py-1 sm:px-2 sm:py-1 text-xs outline-hidden font-medium text-slate-700 cursor-pointer hover:border-slate-400`}
+            >
+              <option value="ALL">Semua PPL</option>
+              {filteredPplList.map(p => (
+                <option key={p.name} value={p.name}>{p.name}</option>
+              ))}
+            </select>
+
+            {/* Date Selector */}
+            <select
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className={`${isMobileFilterOpen ? 'block' : 'hidden'} xl:block bg-slate-50 border border-slate-300 rounded px-1.5 py-1 sm:px-2 sm:py-1 text-xs outline-hidden font-medium text-slate-700 cursor-pointer hover:border-slate-400`}
+            >
+              <option value="ALL">Semua Tanggal</option>
+              {dateList.map(d => (
+                <option key={d} value={d}>{d}</option>
+              ))}
+            </select>
+
+            {/* Search Input */}
+            <div className={`relative ${isMobileFilterOpen ? 'block' : 'hidden'} xl:block`}>
+              <input
+                type="text"
+                placeholder="Cari..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="bg-slate-50 border border-slate-300 rounded pl-6 pr-2 py-1 text-xs text-slate-700 outline-hidden focus:border-blue-600 focus:bg-white w-24 sm:w-32 lg:w-48 transition-colors"
+              />
+              <Search size={11} className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400" />
+            </div>
+
+            {/* Reset Filters */}
+            {(selectedPml !== 'ALL' || selectedPpl !== 'ALL' || selectedDate !== 'ALL' || searchQuery !== '') && (
+              <button
+                onClick={() => {
+                  setSelectedPml('ALL');
+                  setSelectedPpl('ALL');
+                  setSelectedDate('ALL');
+                  setSearchQuery('');
+                }}
+                className={`${isMobileFilterOpen ? 'block' : 'hidden'} xl:block text-[10px] sm:text-xs text-red-600 hover:text-red-700 font-semibold bg-red-50 hover:bg-red-100 rounded px-1.5 py-1 sm:px-2.5 transition-colors cursor-pointer`}
+              >
+                Reset
+              </button>
+            )}
+
             <button 
               onClick={() => fetchSheetData(false)}
               disabled={isLiveLoading}
               id="sync-now-btn"
-              className="bg-blue-600 text-white px-2 py-1 sm:px-2.5 sm:py-1 rounded text-xs sm:text-sm font-semibold hover:bg-blue-700 disabled:opacity-50 transition-colors cursor-pointer flex items-center gap-1.5"
+              className="bg-blue-600 text-white px-2 py-1 sm:px-2.5 sm:py-1 rounded text-xs sm:text-sm font-semibold hover:bg-blue-700 disabled:opacity-50 transition-colors cursor-pointer flex items-center gap-1.5 ml-1"
             >
               <RefreshCw size={14} className={isLiveLoading ? "animate-spin" : ""} />
               <span className="hidden sm:inline">Sync</span>
@@ -1606,66 +1671,6 @@ export default function App() {
 
 
 
-        {/* Dynamic Filter Row */}
-        <div className="col-span-12 bg-white/95 backdrop-blur-sm border border-slate-205 p-3 rounded-lg flex flex-wrap gap-3 items-center justify-between shadow-2xs sticky top-2 z-40">
-          <div className="flex flex-wrap items-center gap-2.5">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1">
-              <Filter size={11} /> Filter:
-            </span>
-
-            {/* PPL Selector */}
-            <select
-              value={selectedPpl}
-              onChange={(e) => setSelectedPpl(e.target.value)}
-              className="bg-slate-50 border border-slate-300 rounded px-2.5 py-1 text-xs outline-hidden font-medium text-slate-700 cursor-pointer"
-            >
-              <option value="ALL">Semua PPL (Petugas)</option>
-              {filteredPplList.map(p => (
-                <option key={p.name} value={p.name}>{p.name}</option>
-              ))}
-            </select>
-
-            {/* Date Selector */}
-            <select
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              className="bg-slate-50 border border-slate-300 rounded px-2.5 py-1 text-xs outline-hidden font-medium text-slate-700 cursor-pointer"
-            >
-              <option value="ALL">Semua Tanggal</option>
-              {dateList.map(d => (
-                <option key={d} value={d}>{d}</option>
-              ))}
-            </select>
-
-            {/* Search Input */}
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Cari PPL / PML..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="bg-slate-50 border border-slate-300 rounded pl-7 pr-2.5 py-1 text-xs text-slate-700 outline-hidden focus:border-blue-600 focus:bg-white w-48 transition-colors"
-              />
-              <Search size={11} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
-            </div>
-          </div>
-
-          {/* Reset Filters */}
-          {(selectedPml !== 'ALL' || selectedPpl !== 'ALL' || selectedDate !== 'ALL' || searchQuery !== '') && (
-            <button
-              onClick={() => {
-                setSelectedPml('ALL');
-                setSelectedPpl('ALL');
-                setSelectedDate('ALL');
-                setSearchQuery('');
-              }}
-              className="text-xs text-red-600 hover:text-red-700 font-semibold bg-red-50 hover:bg-red-100 rounded px-2.5 py-1 transition-colors cursor-pointer"
-            >
-              Reset Filter
-            </button>
-          )}
-        </div>
-        
         {/* KPI Bar */}
         <div className="col-span-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           
